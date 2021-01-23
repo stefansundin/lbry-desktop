@@ -20,10 +20,11 @@ type Props = {
   search: (string, Options) => void,
   mature: boolean,
   isAuthenticated: boolean,
+  theme: string,
 };
 
 export default function RecommendedContent(props: Props) {
-  const { uri, claim, search, mature, recommendedContent, isSearching, isAuthenticated } = props;
+  const { uri, claim, search, mature, recommendedContent, isSearching, isAuthenticated, theme } = props;
   const isMobile = useIsMobile();
   const isMedium = useIsMediumScreen();
 
@@ -65,7 +66,13 @@ export default function RecommendedContent(props: Props) {
           type="small"
           loading={isSearching}
           uris={recommendedContent}
-          injectedItem={SHOW_ADS && !isAuthenticated && IS_WEB && <Ads small type={SIMPLE_SITE ? 'google' : 'video'} />}
+          injectedItem={
+            SHOW_ADS && IS_WEB && SIMPLE_SITE ? (
+              <Ads small type={'google'} theme={theme} />
+            ) : (
+              !isAuthenticated && <Ads small type={'video'} theme={theme} />
+            )
+          }
           empty={__('No related content found')}
         />
       }
