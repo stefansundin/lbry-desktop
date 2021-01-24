@@ -14,9 +14,10 @@ const G_AD_ID = 'ca-pub-7102138296475003';
 // const G_AD_ONE_LAYOUT = '-gv+p-3a-8r+sd';
 // const G_AD_ONE_SLOT = '6052061397';
 
-const G_AD_LIGHT_LAYOUT = '-h9-o+3s-6c+33'; // dark mode, related
+// const G_AD_LIGHT_LAYOUT = '-h9-o+3s-6c+33'; // old layout
+const G_AD_LIGHT_LAYOUT = '-gr-p+3s-5w+2d'; // light mode, related
 const G_AD_LIGHT_SLOT = '1498002046';
-const G_AD_DARK_LAYOUT = '-he-6+2d-8e+8l'; // dark mode, related
+const G_AD_DARK_LAYOUT = '-gr-p+3s-5w+2d'; // dark mode, related
 const G_AD_DARK_SLOT = '7266878639';
 
 type Props = {
