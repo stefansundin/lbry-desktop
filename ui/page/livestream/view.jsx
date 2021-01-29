@@ -101,6 +101,7 @@ export default function LivestreamPage(props: Props) {
     }
 
     let interval;
+    checkBitwave();
     if (uriFromLivestreamClaim) {
       interval = setInterval(checkBitwave, 10000);
     }

@@ -53,8 +53,8 @@
     "electron-updater": "^4.2.4",
     "express": "^4.17.1",
     "if-env": "^1.0.4",
-	"remark-breaks": "^2.0.1",
-	"remove-markdown": "^0.3.0",
+    "remark-breaks": "^2.0.1",
+    "remove-markdown": "^0.3.0",
     "tempy": "^0.6.0",
     "videojs-logo": "^2.1.4"
   },
@@ -202,7 +202,6 @@
     "tree-kill": "^1.1.0",
     "unist-util-visit": "^1.4.1",
     "uuid": "^8.3.0",
-    "vast-client": "^3.0.0",
     "video.js": "^7.10.1",
     "videojs-contrib-quality-levels": "^2.0.9",
     "videojs-event-tracking": "^1.0.1",
