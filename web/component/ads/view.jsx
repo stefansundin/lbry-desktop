@@ -7,6 +7,8 @@ import { withRouter } from 'react-router';
 import I18nMessage from 'component/i18nMessage';
 import Button from 'component/button';
 import classnames from 'classnames';
+import { no_ads } from 'homepages';
+console.log('no_ads', no_ads);
 
 const ADS_URL = '//assets.revcontent.com/master/delivery.js';
 const IS_MOBILE = typeof window.orientation !== 'undefined';
@@ -25,6 +27,7 @@ type Props = {
   type: string,
   small: boolean,
   theme: string,
+  claim: GenericClaim,
 };
 
 function Ads(props: Props) {
@@ -33,8 +36,11 @@ function Ads(props: Props) {
     type = 'sidebar',
     small,
     theme,
+    claim,
   } = props;
   let googleInit;
+
+  const channelId = claim && claim.signing_channel && claim.signing_channel.claim_id;
 
   useEffect(() => {
     if (SHOW_ADS && type === 'video') {
@@ -76,7 +82,7 @@ function Ads(props: Props) {
   useEffect(() => {
     let script;
 
-    if (SHOW_ADS && type === 'google') {
+    if (SHOW_ADS && type === 'google' && no_ads && !no_ads.includes(channelId)) {
       const d = document;
       if (!d.getElementById('googleadscriptid')) {
         try {
@@ -162,7 +168,7 @@ function Ads(props: Props) {
     </div>
   );
 
-  if (!SHOW_ADS) {
+  if (!SHOW_ADS || (type === 'google' && no_ads && no_ads.includes(channelId))) {
     return false;
   }
   if (type === 'video') {
