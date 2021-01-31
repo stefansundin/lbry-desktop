@@ -7,8 +7,7 @@ import { withRouter } from 'react-router';
 import I18nMessage from 'component/i18nMessage';
 import Button from 'component/button';
 import classnames from 'classnames';
-import { no_ads } from 'homepages';
-console.log('no_ads', no_ads);
+import { no_ads as ADS_CHANNEL_BLACKLIST } from 'homepages';
 
 const ADS_URL = '//assets.revcontent.com/master/delivery.js';
 const IS_MOBILE = typeof window.orientation !== 'undefined';
@@ -28,6 +27,7 @@ type Props = {
   small: boolean,
   theme: string,
   claim: GenericClaim,
+  isMature: boolean,
 };
 
 function Ads(props: Props) {
@@ -37,11 +37,13 @@ function Ads(props: Props) {
     small,
     theme,
     claim,
+    isMature,
   } = props;
   let googleInit;
 
   const channelId = claim && claim.signing_channel && claim.signing_channel.claim_id;
 
+  const isBlocked = isMature || (ADS_CHANNEL_BLACKLIST && ADS_CHANNEL_BLACKLIST.includes(channelId));
   useEffect(() => {
     if (SHOW_ADS && type === 'video') {
       let script;
@@ -82,7 +84,7 @@ function Ads(props: Props) {
   useEffect(() => {
     let script;
 
-    if (SHOW_ADS && type === 'google' && no_ads && !no_ads.includes(channelId)) {
+    if (SHOW_ADS && type === 'google') {
       const d = document;
       if (!d.getElementById('googleadscriptid')) {
         try {
@@ -168,7 +170,7 @@ function Ads(props: Props) {
     </div>
   );
 
-  if (!SHOW_ADS || (type === 'google' && no_ads && no_ads.includes(channelId))) {
+  if (!SHOW_ADS || (type === 'google' && isBlocked)) {
     return false;
   }
   if (type === 'video') {
