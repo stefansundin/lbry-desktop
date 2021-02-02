@@ -116,16 +116,18 @@ export default function WunderBarSuggestions(props: Props) {
     if (!isLbryUrl) {
       navigateToSearchPage(value);
     } else {
+      const withoutProto = value.slice(7).replace(/:/g, '#');
+      const cleanValue = `lbry://${withoutProto}`;
       try {
-        if (isURIValid(value)) {
-          const uri = normalizeURI(value);
+        if (isURIValid(cleanValue)) {
+          const uri = normalizeURI(cleanValue);
           const normalizedWebUrl = formatLbryUrlForWeb(uri);
           push(normalizedWebUrl);
         } else {
           doShowSnackBar(INVALID_URL_ERROR);
         }
       } catch (e) {
-        navigateToSearchPage(value);
+        navigateToSearchPage(cleanValue);
       }
     }
   }
