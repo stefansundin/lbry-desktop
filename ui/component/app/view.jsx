@@ -60,6 +60,7 @@ type Props = {
   },
   fetchAccessToken: () => void,
   fetchChannelListMine: () => void,
+  fetchCollectionListMine: () => void,
   signIn: () => void,
   requestDownloadUpgrade: () => void,
   onSignedIn: () => void,
@@ -84,6 +85,8 @@ type Props = {
   myChannelUrls: ?Array<string>,
   setActiveChannelIfNotSet: () => void,
   setIncognito: boolean => void,
+  myCollectionIds: Array<string>,
+  collectionsResolve: (Array<string>) => void,
 };
 
 function App(props: Props) {
@@ -92,6 +95,7 @@ function App(props: Props) {
     user,
     fetchAccessToken,
     fetchChannelListMine,
+    fetchCollectionListMine,
     signIn,
     autoUpdateDownloaded,
     isUpgradeAvailable,
@@ -114,6 +118,8 @@ function App(props: Props) {
     activeChannelClaim,
     setActiveChannelIfNotSet,
     setIncognito,
+    myCollectionIds,
+    collectionsResolve,
   } = props;
 
   const appRef = useRef();
@@ -143,6 +149,9 @@ function App(props: Props) {
   const useCustomScrollbar = !IS_MAC;
   const hasMyChannels = myChannelUrls && myChannelUrls.length > 0;
   const hasNoChannels = myChannelUrls && myChannelUrls.length === 0;
+  const hasCollections = myCollectionIds && myCollectionIds.length;
+  const collectionString = (hasCollections && myCollectionIds.join(',')) || '';
+
   const shouldMigrateLanguage = LANGUAGE_MIGRATIONS[language];
   const hasActiveChannelClaim = activeChannelClaim !== undefined;
 
@@ -230,8 +239,19 @@ function App(props: Props) {
 
     // @if TARGET='app'
     fetchChannelListMine(); // This is fetched after a user is signed in on web
+    fetchCollectionListMine();
     // @endif
-  }, [appRef, fetchAccessToken, fetchChannelListMine]);
+  }, [appRef, fetchAccessToken, fetchChannelListMine, fetchCollectionListMine]);
+
+  // if collectionList something, resolve collections (id)
+  // RESOLVE ALL >>
+  useEffect(() => {
+    // $FlowFixMe
+    if (collectionString.length) {
+      let collectionIds = collectionString.split(',');
+      collectionsResolve(collectionIds);
+    }
+  }, [collectionString, collectionsResolve]);
 
   useEffect(() => {
     // $FlowFixMe

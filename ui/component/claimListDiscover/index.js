@@ -1,3 +1,5 @@
+import ClaimListDiscover from './view';
+
 import { connect } from 'react-redux';
 import {
   doClaimSearch,
@@ -10,7 +12,6 @@ import { selectFollowedTags } from 'redux/selectors/tags';
 import { selectBlockedChannels } from 'redux/selectors/blocked';
 import { doToggleTagFollowDesktop } from 'redux/actions/tags';
 import { makeSelectClientSetting, selectLanguage } from 'redux/selectors/settings';
-import ClaimListDiscover from './view';
 
 const select = state => ({
   followedTags: selectFollowedTags(state),

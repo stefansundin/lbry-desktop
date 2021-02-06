@@ -10,7 +10,7 @@ import ChannelThumbnail from 'component/channelThumbnail';
 import SubscribeButton from 'component/subscribeButton';
 import useGetThumbnail from 'effects/use-get-thumbnail';
 import { formatLbryUrlForWeb } from 'util/url';
-import { parseURI } from 'lbry-redux';
+import { parseURI, COLLECTION_PARAMS } from 'lbry-redux';
 import FileProperties from 'component/fileProperties';
 import FileDownloadLink from 'component/fileDownloadLink';
 import ClaimRepostAuthor from 'component/claimRepostAuthor';
@@ -41,6 +41,8 @@ type Props = {
   streamingUrl: string,
   isMature: boolean,
   showMature: boolean,
+  collectionId?: string,
+  collectionIndex?: string,
 };
 
 function ClaimPreviewTile(props: Props) {
@@ -60,13 +62,20 @@ function ClaimPreviewTile(props: Props) {
     blockedChannelUris,
     isMature,
     showMature,
+    collectionId,
+    collectionIndex,
   } = props;
   const isRepost = claim && claim.repost_channel_url;
   const shouldFetch = claim === undefined;
   const thumbnailUrl = useGetThumbnail(uri, claim, streamingUrl, getFile, placeholder) || thumbnail;
   const canonicalUrl = claim && claim.canonical_url;
-  const navigateUrl = formatLbryUrlForWeb(canonicalUrl || uri || '/');
-
+  let navigateUrl = formatLbryUrlForWeb(canonicalUrl || uri || '/');
+  if (collectionId) {
+    const collectionParams = new URLSearchParams();
+    collectionParams.set(COLLECTION_PARAMS.COLLECTION_ID, collectionId);
+    if (collectionIndex) collectionParams.set(COLLECTION_PARAMS.COLLECTION_INDEX, collectionIndex);
+    navigateUrl = navigateUrl + `?` + collectionParams.toString();
+  }
   const navLinkProps = {
     to: navigateUrl,
     onClick: (e) => e.stopPropagation(),

@@ -8,6 +8,8 @@ import {
   makeSelectClaimIsNsfw,
   SETTINGS,
   makeSelectTagInClaimOrChannelForUri,
+  makeSelectCollectionForId,
+  COLLECTION_PARAMS,
 } from 'lbry-redux';
 import { makeSelectCostInfoForUri, doFetchCostInfoForUri } from 'lbryinc';
 import { selectShowMatureContent, makeSelectClientSetting } from 'redux/selectors/settings';
@@ -21,6 +23,7 @@ const select = (state, props) => {
   const { search } = props.location;
   const urlParams = new URLSearchParams(search);
   const linkedCommentId = urlParams.get('lc');
+  const collectionId = urlParams.get(COLLECTION_PARAMS.COLLECTION_ID);
 
   return {
     linkedComment: makeSelectCommentForCommentId(linkedCommentId)(state),
@@ -32,6 +35,8 @@ const select = (state, props) => {
     renderMode: makeSelectFileRenderModeForUri(props.uri)(state),
     videoTheaterMode: makeSelectClientSetting(SETTINGS.VIDEO_THEATER_MODE)(state),
     commentsDisabled: makeSelectTagInClaimOrChannelForUri(props.uri, DISABLE_COMMENTS_TAG)(state),
+    collection: makeSelectCollectionForId(collectionId)(state),
+    collectionId,
   };
 };
 

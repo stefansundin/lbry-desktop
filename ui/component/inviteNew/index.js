@@ -7,7 +7,12 @@ import {
   selectUserInviteReferralCode,
 } from 'redux/selectors/user';
 import { doUserInviteNew } from 'redux/actions/user';
-import { selectMyChannelClaims, selectFetchingMyChannels, doFetchChannelListMine } from 'lbry-redux';
+import {
+  selectMyChannelClaims,
+  selectFetchingMyChannels,
+  doFetchChannelListMine,
+  doFetchCollectionListMine,
+} from 'lbry-redux';
 import InviteNew from './view';
 
 const select = state => ({
@@ -23,6 +28,7 @@ const select = state => ({
 const perform = dispatch => ({
   inviteNew: email => dispatch(doUserInviteNew(email)),
   fetchChannelListMine: () => dispatch(doFetchChannelListMine()),
+  fetchCollectionListMine: () => dispatch(doFetchCollectionListMine()),
 });
 
 export default connect(select, perform)(InviteNew);

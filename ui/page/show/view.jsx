@@ -10,6 +10,7 @@ import Button from 'component/button';
 import Card from 'component/common/card';
 import AbandonedChannelPreview from 'component/abandonedChannelPreview';
 import { formatLbryUrlForWeb } from 'util/url';
+import { COLLECTION_PARAMS } from 'lbry-redux';
 
 type Props = {
   isResolvingUri: boolean,
@@ -25,6 +26,10 @@ type Props = {
   title: string,
   claimIsMine: boolean,
   claimIsPending: boolean,
+  collectionId: string,
+  collection: Collection,
+  collectionIndex: number,
+  isResolvingCollection: boolean,
 };
 
 function ShowPage(props: Props) {
@@ -38,12 +43,41 @@ function ShowPage(props: Props) {
     claimIsMine,
     isSubscribed,
     claimIsPending,
+    collectionResolve,
+    collectionId,
+    collection,
+    collectionIndex,
+    collectionUrls,
+    isResolvingCollection,
   } = props;
+  const { search } = location;
+
   const signingChannel = claim && claim.signing_channel;
   const canonicalUrl = claim && claim.canonical_url;
   const claimExists = claim !== null && claim !== undefined;
   const haventFetchedYet = claim === undefined;
   const isMine = claim && claim.is_my_output;
+  const claimId = claim && claim.claim_id;
+  const isCollection = claim && claim.value_type === 'collection';
+  const collectionClaimId = collectionId || (isCollection && claimId);
+  const resolvedCollection = collection && collection.id; // not null
+  let urlForCollectionIndex = collectionUrls && collectionUrls[collectionIndex];
+  // troubleshooting/ironing out page loading spinner, etc
+  console.log(
+    'state: rc, r, claim, collectionId, collection',
+    isResolvingCollection,
+    isResolvingUri,
+    claim,
+    collectionId,
+    collection
+  );
+
+  React.useEffect(() => {
+    if (isCollection && !resolvedCollection) {
+      // if we have it and it's not null
+      collectionResolve(collectionClaimId);
+    }
+  }, [isCollection, resolvedCollection, collectionClaimId, collectionResolve]);
 
   useEffect(() => {
     // @if TARGET='web'
@@ -74,11 +108,28 @@ function ShowPage(props: Props) {
     return <Redirect to={newUrl} />;
   }
 
+  // fis for claims
+  if (claim && claim.value_type === 'collection' && urlForCollectionIndex) {
+    const claimId = claim.claim_id;
+    const urlParams = new URLSearchParams(search);
+    urlParams.set(COLLECTION_PARAMS.COLLECTION_ID, claimId);
+    const newUrl = formatLbryUrlForWeb(`${urlForCollectionIndex}?${urlParams.toString()}`);
+    return <Redirect to={newUrl} />;
+    // search it, pass the key
+  }
+
+  // if no items in collection, then what?
+  // if mature, then what?
+
+  // if (claim && claim.value.claims
   let innerContent = '';
-  if (!claim || (claim && !claim.name)) {
+  if (!claim || (claim && !claim.name) || (collectionId && !collection)) {
     innerContent = (
       <Page>
-        {(claim === undefined || isResolvingUri) && (
+        {(claim === undefined ||
+          isResolvingUri ||
+          isResolvingCollection ||
+          (claim && claim.value_type === 'collection' && isResolvingCollection)) && (
           <div className="main--empty">
             <Spinner />
           </div>

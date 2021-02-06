@@ -8,6 +8,7 @@ import FileRenderInitiator from 'component/fileRenderInitiator';
 import FileRenderInline from 'component/fileRenderInline';
 import FileRenderDownload from 'component/fileRenderDownload';
 import RecommendedContent from 'component/recommendedContent';
+import CollectionContent from 'component/collectionContent';
 import CommentsList from 'component/commentsList';
 import Empty from 'component/common/empty';
 
@@ -25,6 +26,8 @@ type Props = {
   isMature: boolean,
   linkedComment: any,
   setPrimaryUri: (?string) => void,
+  collection?: Collection,
+  collectionId: string,
   videoTheaterMode: boolean,
   commentsDisabled: boolean,
 };
@@ -44,6 +47,8 @@ function FilePage(props: Props) {
     setPrimaryUri,
     videoTheaterMode,
     commentsDisabled,
+    collection,
+    collectionId,
   } = props;
   const cost = costInfo ? costInfo.cost : null;
   const hasFileInfo = fileInfo !== undefined;
@@ -130,7 +135,8 @@ function FilePage(props: Props) {
         </div>
       </div>
 
-      {!videoTheaterMode && <RecommendedContent uri={uri} />}
+      {collection && !videoTheaterMode && <CollectionContent id={collectionId} uri={uri} />}
+      {!collection && !videoTheaterMode && <RecommendedContent uri={uri} />}
     </Page>
   );
 }

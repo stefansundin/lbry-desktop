@@ -9,6 +9,8 @@ import { FormField } from 'component/common/form';
 import usePersistedState from 'effects/use-persisted-state';
 import debounce from 'util/debounce';
 import ClaimPreviewTile from 'component/claimPreviewTile';
+import * as ICONS from 'constants/icons';
+import Button from 'component/button';
 
 const DEBOUNCE_SCROLL_HANDLER_MS = 150;
 const SORT_NEW = 'new';
@@ -38,6 +40,8 @@ type Props = {
   tileLayout?: boolean,
   renderActions?: (Claim) => ?Node,
   searchInLanguage: boolean,
+  collectionId?: string,
+  updateCollection?: (string, CollectionUpdateParams) => void,
 };
 
 export default function ClaimList(props: Props) {
@@ -63,6 +67,8 @@ export default function ClaimList(props: Props) {
     tileLayout = false,
     renderActions,
     searchInLanguage,
+    collectionId,
+    updateCollection,
   } = props;
 
   const [currentSort, setCurrentSort] = usePersistedState(persistedStorageKey, SORT_NEW);
@@ -100,8 +106,12 @@ export default function ClaimList(props: Props) {
 
   return tileLayout && !header ? (
     <section className="claim-grid">
-      {urisLength > 0 && uris.map((uri) => <ClaimPreviewTile key={uri} uri={uri} />)}
-      {!timedOut && urisLength === 0 && !loading && <div className="empty main--empty">{empty || noResultMsg}</div>}
+      {urisLength > 0 && uris.map((uri, index) => (
+        <ClaimPreviewTile key={uri} uri={uri} collectionId={collectionId} collectionIndex={index} />
+      ))}
+      {!timedOut && urisLength === 0 && !loading && (
+        <div className="empty main--empty">{empty || noResultMsg}</div>
+      )}
       {timedOut && timedOutMessage && <div className="empty main--empty">{timedOutMessage}</div>}
     </section>
   ) : (
@@ -148,6 +158,45 @@ export default function ClaimList(props: Props) {
               {injectedItem && index === 4 && <li>{injectedItem}</li>}
               <ClaimPreview
                 uri={uri}
+                { /* this doesn't belong here */ }
+                actions={
+                  collectionId && (
+                    <span className="help">
+                      <Button
+                        button="alt"
+                        disabled={index === 0}
+                        icon={ICONS.UP}
+                        onClick={e => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (updateCollection) {
+                            updateCollection(collectionId, { order: { from: index, to: index - 1 } });
+                          }
+                        }}
+                      />
+                      <Button
+                        button="alt"
+                        icon={ICONS.DOWN}
+                        onClick={e => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (updateCollection) {
+                            updateCollection(collectionId, { order: { from: index, to: index + 1 } });
+                          }
+                        }}
+                      />
+                      <Button
+                        button="alt"
+                        icon={ICONS.REMOVE}
+                        onClick={e => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (updateCollection) updateCollection(collectionId, { remove: true });
+                        }}
+                      />
+                    </span>
+                  )
+                }
                 type={type}
                 includeSupportAction={includeSupportAction}
                 showUnresolvedClaim={showUnresolvedClaims}
@@ -155,6 +204,8 @@ export default function ClaimList(props: Props) {
                 renderActions={renderActions}
                 showUserBlocked={showHiddenByUser}
                 hideBlock={hideBlock}
+                collectionId={collectionId}
+                collectionIndex={index}
                 customShouldHide={(claim: StreamClaim) => {
                   // Hack to hide spee.ch thumbnail publishes
                   // If it meets these requirements, it was probably uploaded here:

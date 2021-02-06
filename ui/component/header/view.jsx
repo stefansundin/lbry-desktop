@@ -246,13 +246,15 @@ const Header = (props: Props) => {
                 label={LOGO_TITLE} // eslint-disable-line
                 // @endif
                 icon={ICONS.LBRY}
-                onClick={() => {
-                  if (history.location.pathname === '/') window.location.reload();
-                }}
+                // COMMENTED OUT TO TEST ON APP
+                // onClick={() => {
+                //   if (history.location.pathname === '/') window.location.reload();
+                // }}
                 // @if TARGET='app'
-                onDoubleClick={e => {
-                  e.stopPropagation();
-                }}
+                // COMMENTED OUT TO TEST ON APP
+                // onDoubleClick={e => {
+                //   e.stopPropagation();
+                // }}
                 // @endif
                 {...homeButtonNavigationProps}
               />

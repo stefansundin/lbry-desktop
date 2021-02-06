@@ -20,9 +20,9 @@ const HOME = {
   title: 'Home',
   link: `/`,
   icon: ICONS.HOME,
-  onClick: () => {
-    if (window.location.pathname === '/') window.location.reload();
-  },
+  // onClick: () => {
+  //   if (window.location.pathname === '/') window.location.reload();
+  // },
 };
 
 const RECENT_FROM_FOLLOWING = {
@@ -89,9 +89,9 @@ function SideNavigation(props: Props) {
       icon: ICONS.DISCOVER,
     },
     {
-      title: IS_WEB ? 'Purchased' : 'Library',
+      title: 'Library',
       link: `/$/${PAGES.LIBRARY}`,
-      icon: ICONS.PURCHASED,
+      icon: ICONS.LBRY,
       hideForUnauth: true,
     },
   ];

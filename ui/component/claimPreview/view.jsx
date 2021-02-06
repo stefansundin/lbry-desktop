@@ -4,7 +4,7 @@ import React, { useEffect, forwardRef } from 'react';
 import { NavLink, withRouter } from 'react-router-dom';
 import classnames from 'classnames';
 import { SIMPLE_SITE } from 'config';
-import { parseURI } from 'lbry-redux';
+import { parseURI, COLLECTION_PARAMS } from 'lbry-redux';
 // @if TARGET='app'
 import { openClaimPreviewMenu } from 'util/context-menu';
 // @endif
@@ -71,7 +71,8 @@ type Props = {
   renderActions?: (Claim) => ?Node,
   wrapperElement?: string,
   hideRepostLabel?: boolean,
-  repostUrl?: string,
+  collectionId?: string,
+  collectionIndex?: string,
 };
 
 const ClaimPreview = forwardRef<any, {}>((props: Props, ref: any) => {
@@ -120,7 +121,8 @@ const ClaimPreview = forwardRef<any, {}>((props: Props, ref: any) => {
     filteredOutpoints,
     includeSupportAction,
     renderActions,
-    // repostUrl,
+    collectionId,
+    collectionIndex,
   } = props;
   const WrapperElement = wrapperElement || 'li';
   const shouldFetch =
@@ -142,7 +144,13 @@ const ClaimPreview = forwardRef<any, {}>((props: Props, ref: any) => {
   const contentUri = claim && isRepost ? claim.canonical_url || claim.permanent_url : uri;
   const isChannelUri = isValid ? parseURI(contentUri).isChannel : false;
   const signingChannel = claim && claim.signing_channel;
-  const navigateUrl = formatLbryUrlForWeb((claim && claim.canonical_url) || uri || '/');
+  let navigateUrl = formatLbryUrlForWeb((claim && claim.canonical_url) || uri || '/');
+  if (collectionId) {
+    const collectionParams = new URLSearchParams();
+    collectionParams.set(COLLECTION_PARAMS.COLLECTION_ID, collectionId);
+    if (collectionIndex) collectionParams.set(COLLECTION_PARAMS.COLLECTION_INDEX, collectionIndex);
+    navigateUrl = navigateUrl + `?` + collectionParams.toString();
+  }
   const navLinkProps = {
     to: navigateUrl,
     onClick: (e) => e.stopPropagation(),

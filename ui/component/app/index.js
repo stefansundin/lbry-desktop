@@ -5,7 +5,14 @@ import { selectGetSyncErrorMessage, selectSyncFatalError } from 'redux/selectors
 import { doFetchAccessToken, doUserSetReferrer } from 'redux/actions/user';
 import { selectUser, selectAccessToken, selectUserVerifiedEmail } from 'redux/selectors/user';
 import { selectUnclaimedRewards } from 'redux/selectors/rewards';
-import { doFetchChannelListMine, selectMyChannelUrls, SETTINGS } from 'lbry-redux';
+import {
+  doFetchChannelListMine,
+  doFetchCollectionListMine,
+  SETTINGS,
+  selectMyCollectionIds, //published*
+  doResolveCollections,
+  selectMyChannelUrls,
+} from 'lbry-redux';
 import {
   makeSelectClientSetting,
   selectLanguage,
@@ -46,11 +53,13 @@ const select = state => ({
   syncFatalError: selectSyncFatalError(state),
   activeChannelClaim: selectActiveChannelClaim(state),
   myChannelUrls: selectMyChannelUrls(state),
+  myCollectionIds: selectMyCollectionIds(state),
 });
 
 const perform = dispatch => ({
   fetchAccessToken: () => dispatch(doFetchAccessToken()),
   fetchChannelListMine: () => dispatch(doFetchChannelListMine()),
+  fetchCollectionListMine: () => dispatch(doFetchCollectionListMine()),
   setLanguage: language => dispatch(doSetLanguage(language)),
   signIn: () => dispatch(doSignIn()),
   requestDownloadUpgrade: () => dispatch(doDownloadUpgradeRequested()),
@@ -60,6 +69,7 @@ const perform = dispatch => ({
   setReferrer: (referrer, doClaim) => dispatch(doUserSetReferrer(referrer, doClaim)),
   setActiveChannelIfNotSet: () => dispatch(doSetActiveChannel()),
   setIncognito: () => dispatch(doSetIncognito()),
+  collectionsResolve: claimIds => dispatch(doResolveCollections(claimIds)),
 });
 
 export default hot(connect(select, perform)(App));
