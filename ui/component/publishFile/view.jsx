@@ -27,7 +27,7 @@ type Props = {
   updatePublishForm: ({}) => void,
   disabled: boolean,
   publishing: boolean,
-  showToast: string => void,
+  showToast: (string) => void,
   inProgress: boolean,
   clearPublish: () => void,
   ffmpegStatus: any,
@@ -35,8 +35,8 @@ type Props = {
   size: number,
   duration: number,
   isVid: boolean,
-  setPublishMode: string => void,
-  setPrevFileText: string => void,
+  setPublishMode: (string) => void,
+  setPrevFileText: (string) => void,
   header: Node,
 };
 
@@ -73,10 +73,11 @@ function PublishFile(props: Props) {
   const [userOptimize, setUserOptimize] = usePersistedState('publish-file-user-optimize', false);
 
   const RECOMMENDED_BITRATE = 6000000;
-  const TV_PUBLISH_SIZE_LIMIT: number = 2147483648;
+  const TV_PUBLISH_SIZE_LIMIT: number = 4294967296;
+  const TV_PUBLISH_SIZE_LIMIT_STR_GB = '4';
   const UPLOAD_SIZE_MESSAGE = __(
-    '%SITE_NAME% uploads are limited to 2 GB. Download the app for unrestricted publishing.',
-    { SITE_NAME }
+    '%SITE_NAME% uploads are limited to %limit% GB. Download the app for unrestricted publishing.',
+    { SITE_NAME, limit: TV_PUBLISH_SIZE_LIMIT_STR_GB }
   );
   const PROCESSING_MB_PER_SECOND = 0.5;
   const MINUTES_THRESHOLD = 30;
@@ -196,8 +197,8 @@ function PublishFile(props: Props) {
       return (
         <p className="help">
           {__(
-            'For video content, use MP4s in H264/AAC format and a friendly bitrate (under 5 Mbps) and resolution (720p) for more reliable streaming. %SITE_NAME% uploads are restricted to 2 GB.',
-            { SITE_NAME }
+            'For video content, use MP4s in H264/AAC format and a friendly bitrate (under 5 Mbps) and resolution (720p) for more reliable streaming. %SITE_NAME% uploads are restricted to %limit% GB.',
+            { SITE_NAME, limit: TV_PUBLISH_SIZE_LIMIT_STR_GB }
           )}{' '}
           <Button button="link" label={__('Upload Guide')} href="https://lbry.com/faq/video-publishing-guide" />
         </p>
@@ -271,11 +272,11 @@ function PublishFile(props: Props) {
       if (isMp4) {
         const video = document.createElement('video');
         video.preload = 'metadata';
-        video.onloadedmetadata = function() {
+        video.onloadedmetadata = () => {
           updateFileInfo(video.duration, file.size, isVideo);
           window.URL.revokeObjectURL(video.src);
         };
-        video.onerror = function() {
+        video.onerror = () => {
           updateFileInfo(0, file.size, isVideo);
         };
         video.src = window.URL.createObjectURL(file);
