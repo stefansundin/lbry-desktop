@@ -7,6 +7,8 @@ const SUPPORTED_BROWSER_LANGUAGES = {
   'zh-Hant': 'zh-Hant',
   hr: 'hr',
   nl: 'nl',
+  no: 'no',
+  fi: 'fi',
   fr: 'fr',
   de: 'de',
   gu: 'gu',
@@ -34,6 +36,4 @@ const SUPPORTED_BROWSER_LANGUAGES = {
   uk: 'uk',
 };
 
-// Properties: language code (e.g. 'ja')
-// Values: name of the language in native form (e.g. '日本語')
 export default SUPPORTED_BROWSER_LANGUAGES;
