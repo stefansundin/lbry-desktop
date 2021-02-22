@@ -14,6 +14,9 @@ import { parseURI } from 'lbry-redux';
 import FileProperties from 'component/fileProperties';
 import FileDownloadLink from 'component/fileDownloadLink';
 import ClaimRepostAuthor from 'component/claimRepostAuthor';
+// @if TARGET='app'
+import { openClaimPreviewMenu } from 'util/context-menu';
+// @endif
 
 type Props = {
   uri: string,
@@ -150,10 +153,19 @@ function ClaimPreviewTile(props: Props) {
     );
   }
 
+  function handleContextMenu(e) {
+    // @if TARGET='app'
+    e.preventDefault();
+    e.stopPropagation();
+    openClaimPreviewMenu(claim, e);
+    // @endif
+  }
+
   return (
     <li
       role="link"
       onClick={handleClick}
+      onContextMenu={handleContextMenu}
       className={classnames('card claim-preview--tile', {
         'claim-preview__wrapper--channel': isChannel,
       })}

@@ -2,11 +2,12 @@
 import type { Node } from 'react';
 import React, { useEffect, forwardRef } from 'react';
 import { NavLink, withRouter } from 'react-router-dom';
-import { useImage } from 'react-image';
 import classnames from 'classnames';
-import { CHANNEL_THUMBNAIL_FALLBACK, STREAM_THUMBNAIL_FALLBACK, SIMPLE_SITE } from 'config';
-import { parseURI, convertToShareLink } from 'lbry-redux';
-import { openCopyLinkMenu } from 'util/context-menu';
+import { SIMPLE_SITE } from 'config';
+import { parseURI } from 'lbry-redux';
+// @if TARGET='app'
+import { openClaimPreviewMenu } from 'util/context-menu';
+// @endif
 import { formatLbryUrlForWeb } from 'util/url';
 import { isEmpty } from 'util/object';
 import FileThumbnail from 'component/fileThumbnail';
@@ -189,20 +190,12 @@ const ClaimPreview = forwardRef<any, {}>((props: Props, ref: any) => {
   // Weird placement warning
   // Make sure this happens after we figure out if this claim needs to be hidden
   const thumbnailUrl = useGetThumbnail(contentUri, claim, streamingUrl, getFile, shouldHide);
-  const isStream = claim && claim.value_type === 'stream';
-  const { src: thumbnailUrlWithFallback } = useImage({
-    srcList: [thumbnailUrl, isStream ? STREAM_THUMBNAIL_FALLBACK : CHANNEL_THUMBNAIL_FALLBACK],
-    useSuspense: false,
-  });
 
   function handleContextMenu(e) {
     // @if TARGET='app'
     e.preventDefault();
     e.stopPropagation();
-    if (claim) {
-      const shareLink = convertToShareLink(claim.canonical_url || claim.permanent_url);
-      openCopyLinkMenu(shareLink.replace(/#/g, ':'), e);
-    }
+    openClaimPreviewMenu(claim, e);
     // @endif
   }
 
@@ -288,7 +281,7 @@ const ClaimPreview = forwardRef<any, {}>((props: Props, ref: any) => {
           <>
             {!pending ? (
               <NavLink {...navLinkProps}>
-                <FileThumbnail thumbnail={thumbnailUrlWithFallback}>
+                <FileThumbnail thumbnail={thumbnailUrl}>
                   {/* @if TARGET='app' */}
                   {claim && (
                     <div className="claim-preview__hover-actions">
@@ -304,7 +297,7 @@ const ClaimPreview = forwardRef<any, {}>((props: Props, ref: any) => {
                 </FileThumbnail>
               </NavLink>
             ) : (
-              <FileThumbnail thumbnail={thumbnailUrlWithFallback} />
+              <FileThumbnail thumbnail={thumbnailUrl} />
             )}
           </>
         )}

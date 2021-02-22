@@ -1,4 +1,5 @@
-import { clipboard, remote } from 'electron';
+import { clipboard, remote, shell } from 'electron';
+import { convertToShareLink } from 'lbry-redux';
 const isDev = process.env.NODE_ENV !== 'production';
 
 function injectDevelopmentTemplate(event, templates) {
@@ -105,16 +106,37 @@ export function openSnippetMenu(codeMirror, event) {
   openContextMenu(event, templates, false, selection);
 }
 
-export function openCopyLinkMenu(text, event) {
-  const templates = [
-    {
+export function openClaimPreviewMenu(claim, event) {
+  // @if TARGET='app'
+  let templates = [];
+
+  if (claim) {
+    const shareLink = convertToShareLink(claim.canonical_url || claim.permanent_url);
+    const claimId = claim.claim_id;
+
+    templates.push({
       label: 'Copy link',
       click: () => {
-        clipboard.writeText(text);
+        clipboard.writeText(shareLink);
       },
-    },
-  ];
-  openContextMenu(event, templates);
+    });
+
+    templates.push({ type: 'separator' });
+
+    templates.push({
+      label: 'Report content',
+      click: () => {
+        shell.openExternal(`https://lbry.com/dmca/${claimId}`);
+      },
+    });
+  }
+
+  injectDevelopmentTemplate(event, templates);
+
+  if (templates.length !== 0) {
+    remote.Menu.buildFromTemplate(templates).popup({});
+  }
+  // @endif
 }
 
 // Block context menu

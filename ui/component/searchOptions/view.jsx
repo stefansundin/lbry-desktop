@@ -1,7 +1,7 @@
 // @flow
 import { SEARCH_OPTIONS } from 'constants/search';
 import * as ICONS from 'constants/icons';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Form, FormField } from 'component/common/form';
 import Button from 'component/button';
 
@@ -14,7 +14,14 @@ type Props = {
 
 const SearchOptions = (props: Props) => {
   const { options, setSearchOption, expanded, toggleSearchExpanded } = props;
+  const stringifiedOptions = JSON.stringify(options);
   const resultCount = options[SEARCH_OPTIONS.RESULT_COUNT];
+
+  const isFilteringByChannel = useMemo(() => {
+    const jsonOptions = JSON.parse(stringifiedOptions);
+    const claimType = String(jsonOptions[SEARCH_OPTIONS.CLAIM_TYPE] || '');
+    return claimType.includes(SEARCH_OPTIONS.INCLUDE_CHANNELS);
+  }, [stringifiedOptions]);
 
   return (
     <div>
@@ -54,7 +61,7 @@ const SearchOptions = (props: Props) => {
             ))}
           </fieldset>
 
-          <fieldset>
+          <fieldset disabled={isFilteringByChannel}>
             <legend className="search__legend">{__('Type')}</legend>
             {[
               {
@@ -85,7 +92,7 @@ const SearchOptions = (props: Props) => {
                 blockWrap={false}
                 disabled={options[SEARCH_OPTIONS.CLAIM_TYPE] === SEARCH_OPTIONS.INCLUDE_CHANNELS}
                 label={label}
-                checked={options[option]}
+                checked={!isFilteringByChannel && options[option]}
                 onChange={() => setSearchOption(option, !options[option])}
               />
             ))}
@@ -97,7 +104,7 @@ const SearchOptions = (props: Props) => {
               type="select"
               name="result-count"
               value={resultCount}
-              onChange={e => setSearchOption(SEARCH_OPTIONS.RESULT_COUNT, e.target.value)}
+              onChange={(e) => setSearchOption(SEARCH_OPTIONS.RESULT_COUNT, e.target.value)}
               blockWrap={false}
               label={__('Returned Results')}
             >

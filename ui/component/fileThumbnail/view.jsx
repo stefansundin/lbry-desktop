@@ -46,11 +46,9 @@ function FileThumbnail(props: Props) {
   }
   // @endif
 
-  const cleanUrl = url ? url.replace(/'/g, "\\'") : '';
-
   return (
     <div
-      style={{ backgroundImage: `url('${cleanUrl}')` }}
+      style={{ backgroundImage: `url('${url ? url.replace(/'/g, "\\'") : ''}')` }}
       className={classnames('media__thumb', className, {
         'media__thumb--resolving': !hasResolvedClaim,
       })}
