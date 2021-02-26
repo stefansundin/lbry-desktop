@@ -1585,5 +1585,14 @@
   "Level %current_level%": "Level %current_level%",
   "Creator tools": "Creator tools",
   "Interacting as %channelName%": "Interacting as %channelName%",
+  "Mute (m)": "Mute (m)",
+  "Playback Rate (<, >)": "Playback Rate (<, >)",
+  "Fullscreen (f)": "Fullscreen (f)",
+  "Pause (space)": "Pause (space)",
+  "Play (space)": "Play (space)",
+  "Unmute (m)": "Unmute (m)",
+  "Exit Fullscreen (f)": "Exit Fullscreen (f)",
+  "Toggle Theater mode (t)": "Toggle Theater mode (t)",
+  "Quality": "Quality",
   "--end--": "--end--"
 }
