@@ -17,6 +17,7 @@ import {
 import { doOpenModal } from 'redux/actions/app';
 
 import CollectionPage from './view';
+import { selectActiveChannelClaim, selectIncognito } from '../../redux/selectors/app';
 
 const select = (state, props) => ({
   claim: makeSelectClaimForUri(props.uri)(state),
@@ -32,12 +33,14 @@ const select = (state, props) => ({
   createError: selectCreateCollectionError(state),
   creatingCollection: selectCreatingCollection(state),
   balance: selectBalance(state),
+  activeChannelClaim: selectActiveChannelClaim(state),
+  incognito: selectIncognito(state),
 });
 
-const perform = dispatch => ({
+const perform = (dispatch) => ({
   openModal: (modal, props) => dispatch(doOpenModal(modal, props)),
-  updateCollection: params => dispatch(doUpdateCollection(params)),
-  createCollection: params => {
+  updateCollection: (params) => dispatch(doUpdateCollection(params)),
+  createCollection: (params) => {
     const { name, amount, ...optionalParams } = params;
     return dispatch(doCreateCollection('@' + name, amount, optionalParams));
   },

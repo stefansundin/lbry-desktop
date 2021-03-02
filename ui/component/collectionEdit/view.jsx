@@ -19,6 +19,9 @@ import * as PAGES from 'constants/pages';
 import analytics from 'analytics';
 import LbcSymbol from 'component/common/lbc-symbol';
 import SUPPORTED_LANGUAGES from 'constants/supported_languages';
+import ChannelSelector from 'component/channelSelector';
+import { DOMAIN } from 'config';
+
 const LANG_NONE = 'none';
 
 const MAX_TAG_SELECT = 5;
@@ -34,20 +37,22 @@ type Props = {
   tags: Array<string>,
   locations: Array<string>,
   languages: Array<string>,
-  updateCollection: any => Promise<any>,
+  updateCollection: (any) => Promise<any>,
   updatingCollection: boolean,
   updateError: string,
-  createCollection: any => Promise<any>,
+  createCollection: (any) => Promise<any>,
   createError: string,
   creatingCollection: boolean,
   clearCollectionErrors: () => void,
   onDone: () => void,
   openModal: (
     id: string,
-    { onUpdate: string => void, assetName: string, helpText: string, currentValue: string, title: string }
+    { onUpdate: (string) => void, assetName: string, helpText: string, currentValue: string, title: string }
   ) => void,
   uri: string,
   disabled: boolean,
+  activeChannelClaim: ?ChannelClaim,
+  incognito: boolean,
 };
 
 function CollectionForm(props: Props) {
@@ -71,6 +76,8 @@ function CollectionForm(props: Props) {
     clearCollectionErrors,
     openModal,
     disabled,
+    activeChannelClaim,
+    incognito,
   } = props;
   const [nameError, setNameError] = React.useState(undefined);
   const [bidError, setBidError] = React.useState('');
@@ -83,10 +90,14 @@ function CollectionForm(props: Props) {
   const languageParam = params.languages;
   const primaryLanguage = Array.isArray(languageParam) && languageParam.length && languageParam[0];
   const secondaryLanguage = Array.isArray(languageParam) && languageParam.length >= 2 && languageParam[1];
-
+  const activeChannelName = activeChannelClaim && activeChannelClaim.name;
+  let prefix = IS_WEB ? `${DOMAIN}/` : 'lbry://';
+  if (activeChannelName && !incognito) {
+    prefix += `${activeChannelName}/`;
+  }
   function getCollectionParams() {
     // fill this in with sdk data
-    const channelParams: {
+    const collectionParams: {
       thumbnailUrl: string,
       description: string,
       title: string,
@@ -103,17 +114,17 @@ function CollectionForm(props: Props) {
       languages: languages || [],
       locations: locations || [],
       tags: tags
-        ? tags.map(tag => {
+        ? tags.map((tag) => {
             return { name: tag };
           })
         : [],
     };
 
     if (claimId) {
-      channelParams['claim_id'] = claimId;
+      collectionParams['claim_id'] = claimId;
     }
 
-    return channelParams;
+    return collectionParams;
   }
 
   function handleBidChange(bid: number) {
@@ -162,13 +173,13 @@ function CollectionForm(props: Props) {
 
   function handleSubmit() {
     if (uri) {
-      updateCollection(params).then(success => {
+      updateCollection(params).then((success) => {
         if (success) {
           onDone();
         }
       });
     } else {
-      createCollection(params).then(success => {
+      createCollection(params).then((success) => {
         if (success) {
           analytics.apiLogPublish(success);
           onDone();
@@ -188,11 +199,10 @@ function CollectionForm(props: Props) {
     setNameError(nameError);
   }, [name]);
 
-  React.useEffect(() => {
-    clearCollectionErrors();
-  }, [clearCollectionErrors]);
+  // React.useEffect(() => {
+  //   clearCollectionErrors();
+  // }, [clearCollectionErrors]);
 
-  // TODO clear and bail after submit
   return (
     <>
       <div className={classnames('main--contained', { 'card--disabled': disabled })}>
@@ -204,7 +214,7 @@ function CollectionForm(props: Props) {
                 title={__('Edit')}
                 onClick={() =>
                   openModal(MODALS.IMAGE_UPLOAD, {
-                    onUpdate: v => handleThumbnailChange(v),
+                    onUpdate: (v) => handleThumbnailChange(v),
                     title: __('Edit Thumbnail Image'),
                     helpText: __('(1:1)'),
                     assetName: __('Thumbnail'),
@@ -241,10 +251,16 @@ function CollectionForm(props: Props) {
               <Card
                 body={
                   <>
+                    <fieldset-group className="fieldset-group--smushed fieldset-group--disabled-prefix">
+                      <fieldset-section>
+                        <label htmlFor="channel_name">{__('Channel')}</label>
+                        <ChannelSelector />
+                      </fieldset-section>
+                    </fieldset-group>
                     <fieldset-group class="fieldset-group--smushed fieldset-group--disabled-prefix">
                       <fieldset-section>
                         <label htmlFor="channel_name">{__('Name')}</label>
-                        <div className="form-field__prefix">{`lbry://`}</div>
+                        <div className="form-field__prefix">{prefix}</div>
                       </fieldset-section>
 
                       <FormField
@@ -255,7 +271,7 @@ function CollectionForm(props: Props) {
                         value={params.name || channelName}
                         error={nameError}
                         disabled={!isNewCollection}
-                        onChange={e => setParams({ ...params, name: e.target.value })}
+                        onChange={(e) => setParams({ ...params, name: e.target.value })}
                       />
                     </fieldset-group>
                     {!isNewCollection && (
@@ -268,7 +284,7 @@ function CollectionForm(props: Props) {
                       label={__('Title')}
                       placeholder={__('My Awesome Collection')}
                       value={params.title}
-                      onChange={e => setParams({ ...params, title: e.target.value })}
+                      onChange={(e) => setParams({ ...params, title: e.target.value })}
                     />
                     <FormField
                       type="markdown"
@@ -276,7 +292,7 @@ function CollectionForm(props: Props) {
                       label={__('Description')}
                       placeholder={__('Description of your content')}
                       value={params.description}
-                      onChange={text => setParams({ ...params, description: text })}
+                      onChange={(text) => setParams({ ...params, description: text })}
                       textAreaMaxLength={FF_MAX_CHARS_IN_DESCRIPTION}
                     />
                   </>
@@ -296,7 +312,7 @@ function CollectionForm(props: Props) {
                     error={bidError}
                     min="0.0"
                     disabled={false}
-                    onChange={event => handleBidChange(parseFloat(event.target.value))}
+                    onChange={(event) => handleBidChange(parseFloat(event.target.value))}
                     placeholder={0.1}
                     helper={__('Increasing your deposit can help your channel be discovered more easily.')}
                   />
@@ -312,17 +328,17 @@ function CollectionForm(props: Props) {
                     limitSelect={MAX_TAG_SELECT}
                     tagsPassedIn={params.tags || []}
                     label={__('Selected Tags')}
-                    onRemove={clickedTag => {
-                      const newTags = params.tags.slice().filter(tag => tag.name !== clickedTag.name);
+                    onRemove={(clickedTag) => {
+                      const newTags = params.tags.slice().filter((tag) => tag.name !== clickedTag.name);
                       setParams({ ...params, tags: newTags });
                     }}
-                    onSelect={newTags => {
-                      newTags.forEach(newTag => {
-                        if (!params.tags.map(savedTag => savedTag.name).includes(newTag.name)) {
+                    onSelect={(newTags) => {
+                      newTags.forEach((newTag) => {
+                        if (!params.tags.map((savedTag) => savedTag.name).includes(newTag.name)) {
                           setParams({ ...params, tags: [...params.tags, newTag] });
                         } else {
                           // If it already exists and the user types it in, remove it
-                          setParams({ ...params, tags: params.tags.filter(tag => tag.name !== newTag.name) });
+                          setParams({ ...params, tags: params.tags.filter((tag) => tag.name !== newTag.name) });
                         }
                       });
                     }}
@@ -338,14 +354,14 @@ function CollectionForm(props: Props) {
                       name="language_select"
                       type="select"
                       label={__('Primary Language')}
-                      onChange={event => handleLanguageChange(0, event.target.value)}
+                      onChange={(event) => handleLanguageChange(0, event.target.value)}
                       value={primaryLanguage}
                       helper={__('Your main content language')}
                     >
                       <option key={'pri-langNone'} value={LANG_NONE}>
                         {__('None selected')}
                       </option>
-                      {Object.keys(SUPPORTED_LANGUAGES).map(language => (
+                      {Object.keys(SUPPORTED_LANGUAGES).map((language) => (
                         <option key={language} value={language}>
                           {SUPPORTED_LANGUAGES[language]}
                         </option>
@@ -355,7 +371,7 @@ function CollectionForm(props: Props) {
                       name="language_select2"
                       type="select"
                       label={__('Secondary Language')}
-                      onChange={event => handleLanguageChange(1, event.target.value)}
+                      onChange={(event) => handleLanguageChange(1, event.target.value)}
                       value={secondaryLanguage}
                       disabled={!languageParam[0]}
                       helper={__('Your other content language')}
@@ -364,8 +380,8 @@ function CollectionForm(props: Props) {
                         {__('None selected')}
                       </option>
                       {Object.keys(SUPPORTED_LANGUAGES)
-                        .filter(lang => lang !== languageParam[0])
-                        .map(language => (
+                        .filter((lang) => lang !== languageParam[0])
+                        .map((language) => (
                           <option key={language} value={language}>
                             {SUPPORTED_LANGUAGES[language]}
                           </option>
@@ -377,7 +393,6 @@ function CollectionForm(props: Props) {
             </TabPanel>
           </TabPanels>
         </Tabs>
-
         <Card
           className="card--after-tabs"
           actions={

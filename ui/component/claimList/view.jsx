@@ -106,12 +106,11 @@ export default function ClaimList(props: Props) {
 
   return tileLayout && !header ? (
     <section className="claim-grid">
-      {urisLength > 0 && uris.map((uri, index) => (
-        <ClaimPreviewTile key={uri} uri={uri} collectionId={collectionId} collectionIndex={index} />
-      ))}
-      {!timedOut && urisLength === 0 && !loading && (
-        <div className="empty main--empty">{empty || noResultMsg}</div>
-      )}
+      {urisLength > 0 &&
+        uris.map((uri, index) => (
+          <ClaimPreviewTile key={uri} uri={uri} collectionId={collectionId} collectionIndex={index} />
+        ))}
+      {!timedOut && urisLength === 0 && !loading && <div className="empty main--empty">{empty || noResultMsg}</div>}
       {timedOut && timedOutMessage && <div className="empty main--empty">{timedOutMessage}</div>}
     </section>
   ) : (
@@ -158,7 +157,7 @@ export default function ClaimList(props: Props) {
               {injectedItem && index === 4 && <li>{injectedItem}</li>}
               <ClaimPreview
                 uri={uri}
-                { /* this doesn't belong here */ }
+                // this doesn't belong here
                 actions={
                   collectionId && (
                     <span className="help">
@@ -166,7 +165,7 @@ export default function ClaimList(props: Props) {
                         button="alt"
                         disabled={index === 0}
                         icon={ICONS.UP}
-                        onClick={e => {
+                        onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           if (updateCollection) {
@@ -177,7 +176,7 @@ export default function ClaimList(props: Props) {
                       <Button
                         button="alt"
                         icon={ICONS.DOWN}
-                        onClick={e => {
+                        onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           if (updateCollection) {
@@ -188,7 +187,7 @@ export default function ClaimList(props: Props) {
                       <Button
                         button="alt"
                         icon={ICONS.REMOVE}
-                        onClick={e => {
+                        onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           if (updateCollection) updateCollection(collectionId, { remove: true });
