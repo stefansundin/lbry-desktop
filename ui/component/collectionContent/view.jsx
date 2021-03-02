@@ -3,7 +3,7 @@ import React from 'react';
 import ClaimList from 'component/claimList';
 import Card from 'component/common/card';
 import Button from 'component/button';
-import * as PAGES from '../../constants/pages';
+import * as PAGES from 'constants/pages';
 
 type Props = {
   collectionUrls: Array<Claim>,
@@ -40,9 +40,7 @@ export default function PlaylistContent(props: Props) {
           // loading={isSearching}
           uris={collectionUrls}
           collectionId={id}
-          // injectedItem={SHOW_ADS && !isAuthenticated && IS_WEB && <Ads type="video" small />}
           empty={__('Playlist is empty')}
-          // playlist={}
         />
       }
     />

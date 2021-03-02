@@ -36,7 +36,6 @@ export default function CollectionPage(props: Props) {
     This page knows if published or not
     isPublishedId: publish / edit / update_publish
     if isPublished: updatePublish
-
    */
   const {
     push,

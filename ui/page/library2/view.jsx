@@ -71,12 +71,10 @@ function LibraryPage(props: Props) {
         );
         // }
       })}
-      {/* for each custom list, get the first item and render an item for that uri passing collectionId */}
-      {/* passing collectionId changes display of claim tiles/ claim preview to collection mode  */}
       <h1>Published Collections</h1>
       <div className={'claim-grid'}>
         {/* $FlowFixMe */}
-        {Object.keys(publishedCollections).map(key => {
+        {Object.keys(publishedCollections).map((key) => {
           // $FlowFixMe
           return (
             <>
@@ -89,7 +87,7 @@ function LibraryPage(props: Props) {
       <h1>Unpublished Collections</h1>
       <div className={'claim-grid'}>
         {/* $FlowFixMe */}
-        {Object.keys(unpublishedCollections).map(key => {
+        {Object.keys(unpublishedCollections).map((key) => {
           return (
             <>
               <CollectionPreviewTile tileLayout collectionId={key} key={key} />

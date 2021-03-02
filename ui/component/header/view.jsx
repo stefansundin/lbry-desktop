@@ -33,8 +33,8 @@ type Props = {
     index: number,
     length: number,
     location: { pathname: string },
-    push: string => void,
-    replace: string => void,
+    push: (string) => void,
+    replace: (string) => void,
   },
   currentTheme: string,
   automaticDarkModeEnabled: boolean,
@@ -58,7 +58,7 @@ type Props = {
   clearPasswordEntry: () => void,
   hasNavigated: boolean,
   sidebarOpen: boolean,
-  setSidebarOpen: boolean => void,
+  setSidebarOpen: (boolean) => void,
   isAbsoluteSideNavHidden: boolean,
   hideCancel: boolean,
   activeChannelClaim: ?ChannelClaim,
@@ -181,7 +181,7 @@ const Header = (props: Props) => {
       label={hideBalance || Number(roundedBalance) === 0 ? __('Your Wallet') : roundedBalance}
       icon={ICONS.LBC}
       // @if TARGET='app'
-      onDoubleClick={e => {
+      onDoubleClick={(e) => {
         e.stopPropagation();
       }}
       // @endif
@@ -197,7 +197,7 @@ const Header = (props: Props) => {
         // @endif
       })}
       // @if TARGET='app'
-      onDoubleClick={e => {
+      onDoubleClick={(e) => {
         remote.getCurrentWindow().maximize();
       }}
       // @endif
@@ -246,15 +246,13 @@ const Header = (props: Props) => {
                 label={LOGO_TITLE} // eslint-disable-line
                 // @endif
                 icon={ICONS.LBRY}
-                // COMMENTED OUT TO TEST ON APP
-                // onClick={() => {
-                //   if (history.location.pathname === '/') window.location.reload();
-                // }}
+                onClick={() => {
+                  if (history.location.pathname === '/') window.location.reload();
+                }}
                 // @if TARGET='app'
-                // COMMENTED OUT TO TEST ON APP
-                // onDoubleClick={e => {
-                //   e.stopPropagation();
-                // }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                }}
                 // @endif
                 {...homeButtonNavigationProps}
               />
@@ -310,7 +308,7 @@ const Header = (props: Props) => {
                     icon={ICONS.REMOVE}
                     {...closeButtonNavigationProps}
                     // @if TARGET='app'
-                    onDoubleClick={e => {
+                    onDoubleClick={(e) => {
                       e.stopPropagation();
                     }}
                     // @endif
@@ -328,8 +326,8 @@ const Header = (props: Props) => {
 type HeaderMenuButtonProps = {
   authenticated: boolean,
   notificationsEnabled: boolean,
-  history: { push: string => void },
-  handleThemeToggle: string => void,
+  history: { push: (string) => void },
+  handleThemeToggle: (string) => void,
   currentTheme: string,
   activeChannelUrl: ?string,
   openSignOutModal: () => void,
@@ -359,7 +357,7 @@ function HeaderMenuButtons(props: HeaderMenuButtonProps) {
             title={__('Publish a file, or create a channel')}
             className="header__navigation-item menu__title header__navigation-item--icon mobile-hidden"
             // @if TARGET='app'
-            onDoubleClick={e => {
+            onDoubleClick={(e) => {
               e.stopPropagation();
             }}
             // @endif
@@ -388,7 +386,7 @@ function HeaderMenuButtons(props: HeaderMenuButtonProps) {
           title={__('Settings')}
           className="header__navigation-item menu__title header__navigation-item--icon  mobile-hidden"
           // @if TARGET='app'
-          onDoubleClick={e => {
+          onDoubleClick={(e) => {
             e.stopPropagation();
           }}
           // @endif
@@ -421,7 +419,7 @@ function HeaderMenuButtons(props: HeaderMenuButtonProps) {
               'header__navigation-item--profile-pic': activeChannelUrl,
             })}
             // @if TARGET='app'
-            onDoubleClick={e => {
+            onDoubleClick={(e) => {
               e.stopPropagation();
             }}
             // @endif

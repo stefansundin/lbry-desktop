@@ -20,9 +20,9 @@ const HOME = {
   title: 'Home',
   link: `/`,
   icon: ICONS.HOME,
-  // onClick: () => {
-  //   if (window.location.pathname === '/') window.location.reload();
-  // },
+  onClick: () => {
+    if (window.location.pathname === '/') window.location.reload();
+  },
 };
 
 const RECENT_FROM_FOLLOWING = {
@@ -38,7 +38,7 @@ type Props = {
   uploadCount: number,
   doSignOut: () => void,
   sidebarOpen: boolean,
-  setSidebarOpen: boolean => void,
+  setSidebarOpen: (boolean) => void,
   isMediumScreen: boolean,
   isOnFilePage: boolean,
   unreadCount: number,
@@ -232,7 +232,7 @@ function SideNavigation(props: Props) {
   const isAbsolute = isOnFilePage || isMediumScreen;
   const microNavigation = !sidebarOpen || isMediumScreen;
   const subLinks = email
-    ? MOBILE_LINKS.filter(link => {
+    ? MOBILE_LINKS.filter((link) => {
         if (!notificationsEnabled && link.icon === ICONS.NOTIFICATION) {
           return false;
         }
@@ -320,7 +320,7 @@ function SideNavigation(props: Props) {
         >
           <div>
             <ul className={classnames('navigation-links', { 'navigation-links--micro': !sidebarOpen })}>
-              {SIDE_LINKS.map(linkProps => {
+              {SIDE_LINKS.map((linkProps) => {
                 //   $FlowFixMe
                 const { hideForUnauth, ...passedProps } = linkProps;
                 return !email && linkProps.hideForUnauth && IS_WEB ? null : (
@@ -386,7 +386,7 @@ function SideNavigation(props: Props) {
           >
             <div>
               <ul className="navigation-links--absolute">
-                {SIDE_LINKS.map(linkProps => {
+                {SIDE_LINKS.map((linkProps) => {
                   //   $FlowFixMe
                   const { hideForUnauth, link, route, ...passedProps } = linkProps;
                   return !email && linkProps.hideForUnauth && IS_WEB ? null : (
@@ -409,7 +409,7 @@ function SideNavigation(props: Props) {
                 })}
               </ul>
               <ul className="navigation-links--absolute mobile-only">
-                {subLinks.map(linkProps => {
+                {subLinks.map((linkProps) => {
                   const { hideForUnauth, ...passedProps } = linkProps;
 
                   return !email && hideForUnauth && IS_WEB ? null : (

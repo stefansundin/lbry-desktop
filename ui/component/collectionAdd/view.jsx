@@ -14,7 +14,7 @@ type Props = {
   builtin: any,
   published: any,
   unpublished: any,
-  addCollection: name => void, // maybe promise
+  addCollection: (name) => void, // maybe promise
   updateCollection: any,
   closeModal: () => void,
 };
@@ -53,13 +53,9 @@ const CollectionAdd = (props: Props) => {
       title={__('Add to collection')}
       subtitle={__('Add uri to collection')}
       actions={
-        // selector OR input field
-        // label
-        // button: new collection
-        // list collections
         <div className="card__body">
-          {Object.values(builtin).map(l => {
-            const isAdded = l.items.some(i => i.claimId === claimId);
+          {Object.values(builtin).map((l) => {
+            const isAdded = l.items.some((i) => i.claimId === claimId);
             return (
               <div
                 key={l.id}
@@ -78,8 +74,8 @@ const CollectionAdd = (props: Props) => {
               </div>
             );
           })}
-          {Object.values(unpublished).map(l => {
-            const isAdded = l.items.some(i => i.claimId === claimId);
+          {Object.values(unpublished).map((l) => {
+            const isAdded = l.items.some((i) => i.claimId === claimId);
             return (
               <div
                 key={l.id}
@@ -98,8 +94,8 @@ const CollectionAdd = (props: Props) => {
               </div>
             );
           })}
-          {Object.values(published).map(l => {
-            const isAdded = l.items.some(i => i.claimId === claimId);
+          {Object.values(published).map((l) => {
+            const isAdded = l.items.some((i) => i.claimId === claimId);
             return (
               <div
                 key={l.id}

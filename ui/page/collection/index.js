@@ -15,9 +15,6 @@ import {
   makeSelectClaimForClaimId,
 } from 'lbry-redux';
 
-// /$/collection?pl=<xyz>
-// resolve the collection if necessary
-
 const select = (state, props) => {
   const { match } = props;
   const { params } = match;
@@ -40,11 +37,8 @@ const select = (state, props) => {
   };
 };
 
-const perform = dispatch => ({
-  // updatePlaylist
-  // updateCollection
-  // publishCollection
-  collectionResolve: claimId => dispatch(doResolveCollection(claimId)),
+const perform = (dispatch) => ({
+  collectionResolve: (claimId) => dispatch(doResolveCollection(claimId)),
 });
 
 export default withRouter(connect(select, perform)(CollectionPage));

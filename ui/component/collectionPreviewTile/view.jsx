@@ -21,9 +21,9 @@ type Props = {
   channelClaim: ?ChannelClaim,
   collectionItemUrls: Array<CollectionItem>,
   channel?: ?ChannelClaim,
-  resolveUri: string => void,
+  resolveUri: (string) => void,
   isResolvingUri: boolean,
-  history: { push: string => void },
+  history: { push: (string) => void },
   thumbnail?: string,
   title?: string,
   blackListedOutpoints: Array<{
@@ -69,7 +69,7 @@ function ClaimPreviewTile(props: Props) {
   const isChannel = false;
   const navLinkProps = {
     to: navigateUrl,
-    onClick: e => e.stopPropagation(),
+    onClick: (e) => e.stopPropagation(),
   };
 
   const signingChannel = claim && claim.signing_channel;
@@ -97,27 +97,27 @@ function ClaimPreviewTile(props: Props) {
   }
 
   // This will be replaced once blocking is done at the wallet server level
-  // if (claim && !shouldHide && blackListedOutpoints) {
-  //   shouldHide = blackListedOutpoints.some(
-  //     outpoint =>
-  //       (signingChannel && outpoint.txid === signingChannel.txid && outpoint.nout === signingChannel.nout) ||
-  //       (outpoint.txid === claim.txid && outpoint.nout === claim.nout)
-  //   );
-  // }
+  if (claim && !shouldHide && blackListedOutpoints) {
+    shouldHide = blackListedOutpoints.some(
+      (outpoint) =>
+        (signingChannel && outpoint.txid === signingChannel.txid && outpoint.nout === signingChannel.nout) ||
+        (outpoint.txid === claim.txid && outpoint.nout === claim.nout)
+    );
+  }
   // We're checking to see if the stream outpoint
   // or signing channel outpoint is in the filter list
-  // if (claim && !shouldHide && filteredOutpoints) {
-  //   shouldHide = filteredOutpoints.some(
-  //     outpoint =>
-  //       (signingChannel && outpoint.txid === signingChannel.txid && outpoint.nout === signingChannel.nout) ||
-  //       (outpoint.txid === claim.txid && outpoint.nout === claim.nout)
-  //   );
-  // }
+  if (claim && !shouldHide && filteredOutpoints) {
+    shouldHide = filteredOutpoints.some(
+      (outpoint) =>
+        (signingChannel && outpoint.txid === signingChannel.txid && outpoint.nout === signingChannel.nout) ||
+        (outpoint.txid === claim.txid && outpoint.nout === claim.nout)
+    );
+  }
 
   // block stream claims
-  // if (claim && !shouldHide && blockedChannelUris.length && signingChannel) {
-  //   shouldHide = blockedChannelUris.some(blockedUri => blockedUri === signingChannel.permanent_url);
-  // }
+  if (claim && !shouldHide && blockedChannelUris.length && signingChannel) {
+    shouldHide = blockedChannelUris.some((blockedUri) => blockedUri === signingChannel.permanent_url);
+  }
   // block channel claims if we can't control for them in claim search
   // e.g. fetchRecommendedSubscriptions
 
@@ -137,10 +137,6 @@ function ClaimPreviewTile(props: Props) {
     );
   }
 
-  // claim list with 2 or so urls
-  // nav to actual playlist play page
-  // link to playlist manage page
-  // what channel
   return (
     <li
       role="link"
