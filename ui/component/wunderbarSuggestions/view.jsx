@@ -1,5 +1,5 @@
 // @flow
-import { URL, URL_LOCAL, URL_DEV } from 'config';
+import { URL, URL_LOCAL, URL_DEV, KNOWN_APP_DOMAINS } from 'config';
 import * as PAGES from 'constants/pages';
 import * as ICONS from 'constants/icons';
 import React from 'react';
@@ -19,6 +19,7 @@ import useThrottle from 'effects/use-throttle';
 import Yrbl from 'component/yrbl';
 import type { ElementRef } from 'react';
 
+const LBRY_PROTOCOL = 'lbry://';
 const WEB_DEV_PREFIX = `${URL_DEV}/`;
 const WEB_LOCAL_PREFIX = `${URL_LOCAL}/`;
 const WEB_PROD_PREFIX = `${URL}/`;
@@ -30,10 +31,10 @@ const ESC_KEY_CODE = 27;
 
 type Props = {
   searchQuery: ?string,
-  onSearch: string => void,
-  navigateToSearchPage: string => void,
-  doResolveUris: string => void,
-  doShowSnackBar: string => void,
+  onSearch: (string) => void,
+  navigateToSearchPage: (string) => void,
+  doResolveUris: (string) => void,
+  doShowSnackBar: (string) => void,
   showMature: boolean,
   isMobile: boolean,
   doCloseMobileSearch: () => void,
@@ -55,10 +56,7 @@ export default function WunderBarSuggestions(props: Props) {
   const searchSize = isMobile ? 20 : 5;
   const { results, loading } = useLighthouse(throttledTerm, showMature, searchSize);
   const noResults = throttledTerm && !loading && results && results.length === 0;
-  const nameFromQuery = throttledTerm
-    .trim()
-    .replace(/\s+/g, '')
-    .replace(/:/g, '#');
+  const nameFromQuery = throttledTerm.trim().replace(/\s+/g, '').replace(/:/g, '#');
   const uriFromQuery = `lbry://${nameFromQuery}`;
   let uriFromQueryIsValid = false;
   let channelUrlForTopTest;
@@ -82,10 +80,10 @@ export default function WunderBarSuggestions(props: Props) {
 
     doCloseMobileSearch();
 
-    const includesLbryTvProd = value.includes(WEB_PROD_PREFIX);
-    const includesLbryTvLocal = value.includes(WEB_LOCAL_PREFIX);
-    const includesLbryTvDev = value.includes(WEB_DEV_PREFIX);
-    const wasCopiedFromWeb = includesLbryTvDev || includesLbryTvLocal || includesLbryTvProd;
+    const knownAppDomains = KNOWN_APP_DOMAINS.map((x) => `https://${x}/`); // Match WEB_PROD_PREFIX's 'https://xx/' format.
+    const webDomainList = [WEB_PROD_PREFIX, ...knownAppDomains, WEB_LOCAL_PREFIX, WEB_DEV_PREFIX];
+    const webDomainIndex = webDomainList.findIndex((x) => value.includes(x));
+    const wasCopiedFromWeb = webDomainIndex !== -1;
     const isLbryUrl = value.startsWith('lbry://');
 
     if (inputRef.current) {
@@ -93,10 +91,7 @@ export default function WunderBarSuggestions(props: Props) {
     }
 
     if (wasCopiedFromWeb) {
-      let prefix = WEB_PROD_PREFIX;
-      if (includesLbryTvLocal) prefix = WEB_LOCAL_PREFIX;
-      if (includesLbryTvDev) prefix = WEB_DEV_PREFIX;
-
+      const prefix = webDomainList[webDomainIndex];
       let query = value.slice(prefix.length).replace(/:/g, '#');
 
       if (query.includes(SEARCH_PREFIX)) {
@@ -117,9 +112,10 @@ export default function WunderBarSuggestions(props: Props) {
     if (!isLbryUrl) {
       navigateToSearchPage(value);
     } else {
+      let query = 'lbry://' + value.slice(LBRY_PROTOCOL.length).replace(/:/g, '#');
       try {
-        if (isURIValid(value)) {
-          const uri = normalizeURI(value);
+        if (isURIValid(query)) {
+          const uri = normalizeURI(query);
           const normalizedWebUrl = formatLbryUrlForWeb(uri);
           push(normalizedWebUrl);
         } else {
@@ -204,7 +200,7 @@ export default function WunderBarSuggestions(props: Props) {
             ref={inputRef}
             className="wunderbar__input"
             placeholder={__('Search')}
-            onChange={e => setTerm(e.target.value)}
+            onChange={(e) => setTerm(e.target.value)}
             value={term}
           />
 
@@ -217,7 +213,7 @@ export default function WunderBarSuggestions(props: Props) {
                 {uriFromQueryIsValid ? <WunderbarTopSuggestion query={nameFromQuery} /> : null}
 
                 <div className="wunderbar__label">{__('Search Results')}</div>
-                {results.slice(0, isMobile ? 20 : 5).map(uri => (
+                {results.slice(0, isMobile ? 20 : 5).map((uri) => (
                   <WunderbarSuggestion key={uri} uri={uri} />
                 ))}
                 <ComboboxOption value={term} className="wunderbar__more-results">

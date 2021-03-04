@@ -1,19 +1,19 @@
 import { connect } from 'react-redux';
 import { makeSelectFileInfoForUri, makeSelectStreamingUrlForUri } from 'lbry-redux';
 import { doClaimEligiblePurchaseRewards } from 'redux/actions/rewards';
-import { makeSelectFileRenderModeForUri, selectPrimaryUri } from 'redux/selectors/content';
+import { makeSelectFileRenderModeForUri, makeSelectIsPlaying } from 'redux/selectors/content';
 import { withRouter } from 'react-router';
 import { doAnalyticsView } from 'redux/actions/app';
 import FileRenderInline from './view';
 
 const select = (state, props) => ({
   fileInfo: makeSelectFileInfoForUri(props.uri)(state),
-  isPlaying: selectPrimaryUri(state) === props.uri,
+  isPlaying: makeSelectIsPlaying(props.uri)(state),
   streamingUrl: makeSelectStreamingUrlForUri(props.uri)(state),
   renderMode: makeSelectFileRenderModeForUri(props.uri)(state),
 });
 
-const perform = dispatch => ({
+const perform = (dispatch) => ({
   triggerAnalyticsView: (uri, timeToStart) => dispatch(doAnalyticsView(uri, timeToStart)),
   claimRewards: () => dispatch(doClaimEligiblePurchaseRewards()),
 });
